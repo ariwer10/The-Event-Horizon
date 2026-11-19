@@ -1,0 +1,18 @@
+{
+  "siteUrl": "https://the-event-horizon.pages.dev",
+  "location": "College Park, MD",
+  "tagline": "Weekly · Space · Policy · Markets",
+  "volume": "Vol. I",
+  "description": "The Event Horizon is a student space publication at the University of Maryland covering the commercial, governmental, international, scientific, defense and economic sides of space.",
+  "joinUrl": "https://forms.gle/8N13Wj5V4fEjgZAX7",
+  "email": "",
+  "instagram": "",
+  "sectionDescriptions": {
+    "commercial": "Launch companies, satellites and the private race to orbit.",
+    "governmental": "NASA, budgets, Congress and the policy that steers it all.",
+    "international": "What China, Europe, India and others are building.",
+    "astronomy": "New discoveries, telescopes and what's in the sky this week.",
+    "defense-intelligence": "Space Force, national security and the fight over orbit.",
+    "space-economy": "Markets, funding and the business of space."
+  }
+}

@@ -1,0 +1,97 @@
+---
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
+import { getArticles } from '../../lib/articles';
+import { formatDate, isoDate, site } from '../../lib/site';
+
+export async function getStaticPaths() {
+  const all = await getArticles();
+  return all.map((a) => ({ params: { slug: a.id }, props: { id: a.id } }));
+}
+
+const all = await getArticles();
+const a = all.find((x) => x.id === Astro.props.id)!;
+const { Content } = await render(a);
+const sameSection = all.filter((x) => x !== a && x.data.section === a.data.section).slice(0, 3);
+const more = sameSection.length ? sameSection : all.filter((x) => x !== a).slice(0, 3);
+const url = site.url + a.href;
+const enc = encodeURIComponent;
+---
+<Base
+  title={a.data.title}
+  description={a.data.dek || `${a.sectionName} — ${site.title}`}
+  image={a.data.image || undefined}
+  type="article"
+  current={a.data.section}
+  published={a.when}
+>
+  <article class="story">
+    <header class="story__head">
+      <a class="kicker" href={a.sectionHref}>{a.sectionName}</a>
+      <h1>{a.data.title}</h1>
+      {a.data.dek && <p class="story__dek">{a.data.dek}</p>}
+      <div class="rule rule--double"></div>
+      <p class="byline byline--story">
+        {a.data.author && <span>By <strong>{a.data.author}</strong></span>}
+        <span class="byline__meta"><time datetime={isoDate(a.when)}>{formatDate(a.when)}</time><span aria-hidden="true">·</span><span>{a.readMinutes} min read</span></span>
+      </p>
+    </header>
+
+    {a.data.image && (
+      <figure class="story__figure">
+        <img src={a.data.image} alt={a.data.imageCaption || ''} decoding="async" />
+        {a.data.imageCaption && <figcaption>{a.data.imageCaption}</figcaption>}
+      </figure>
+    )}
+
+    <div class="prose">
+      <Content />
+    </div>
+
+    <footer class="share" aria-label="Share this article">
+      <span class="label">Share</span>
+      <button type="button" class="share__btn" data-copy={url}>Copy link</button>
+      <a class="share__btn" href={`https://x.com/intent/post?url=${enc(url)}&text=${enc(a.data.title)}`} target="_blank" rel="noopener">X</a>
+      <a class="share__btn" href={`https://www.linkedin.com/sharing/share-offsite/?url=${enc(url)}`} target="_blank" rel="noopener">LinkedIn</a>
+      <a class="share__btn" href={`mailto:?subject=${enc(a.data.title)}&body=${enc(url)}`}>Email</a>
+    </footer>
+  </article>
+
+  {more.length > 0 && (
+    <section class="block" aria-labelledby="more-h">
+      <div class="block__head">
+        <h2 id="more-h" class="label">{sameSection.length ? `More from ${a.sectionName}` : 'More stories'}</h2>
+      </div>
+      <div class="grid grid--3 ruled">
+        {more.map((x) => <ArticleCard article={x} showSection={!sameSection.length} />)}
+      </div>
+    </section>
+  )}
+</Base>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const text = btn.dataset.copy ?? location.href;
+      let ok = false;
+      try {
+        await navigator.clipboard.writeText(text);
+        ok = true;
+      } catch {
+        const t = document.createElement('textarea');
+        t.value = text;
+        t.setAttribute('readonly', '');
+        t.style.position = 'fixed';
+        t.style.opacity = '0';
+        document.body.appendChild(t);
+        t.select();
+        try { ok = document.execCommand('copy'); } catch { ok = false; }
+        t.remove();
+      }
+      const old = 'Copy link';
+      btn.textContent = ok ? 'Copied ✓' : 'Couldn’t copy';
+      setTimeout(() => (btn.textContent = old), 2000);
+    });
+  });
+</script>

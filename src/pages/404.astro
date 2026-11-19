@@ -1,0 +1,13 @@
+---
+import Base from '../layouts/Base.astro';
+import BlackHole from '../components/BlackHole.astro';
+---
+<Base title="Page not found">
+  <section class="empty-front notfound">
+    <BlackHole size="96px" />
+    <p class="label">Error 404</p>
+    <h1>This page crossed the event horizon.</h1>
+    <p>Nothing escapes, including this link. Try the front page or one of the sections above.</p>
+    <a class="btn btn--solid" href="/">Back to the front page</a>
+  </section>
+</Base>

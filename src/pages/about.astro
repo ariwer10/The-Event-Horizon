@@ -1,0 +1,75 @@
+---
+import { getEntry, render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import { site, sections, instagramUrl } from '../lib/site';
+
+const entry = await getEntry('pages', 'about');
+const data = entry?.data ?? { title: '', mission: '', staff: [] };
+const Content = entry ? (await render(entry)).Content : null;
+const hasBody = !!entry?.body?.trim();
+const staff = (data.staff ?? []).filter((p) => p.name);
+const initials = (n: string) =>
+  n.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]!.toUpperCase()).join('');
+---
+<Base title={data.title || 'About'} description={data.mission || site.description} current="about">
+  <header class="page-head">
+    <p class="label">About the paper</p>
+    <h1>{data.title || 'About'}</h1>
+    {data.mission && <p class="page-head__mission">{data.mission}</p>}
+  </header>
+
+  <div class="about">
+    <div class="about__main">
+      {hasBody && Content && <div class="prose"><Content /></div>}
+
+      <section class="about__sections" aria-labelledby="cover-h">
+        <h2 id="cover-h" class="label">What we cover</h2>
+        <ol class="cover-list">
+          {sections.map((s) => (
+            <li>
+              <a href={s.href}><span class="cover-list__num">{s.number}</span><strong>{s.name}</strong></a>
+              {s.description && <p>{s.description}</p>}
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      {staff.length > 0 && (
+        <section class="staff" aria-labelledby="staff-h">
+          <h2 id="staff-h" class="label">The staff</h2>
+          <ul class="staff__grid">
+            {staff.map((p) => (
+              <li class="person">
+                {p.photo ? (
+                  <img class="person__photo" src={p.photo} alt={p.name} loading="lazy" />
+                ) : (
+                  <span class="person__photo person__photo--initials" aria-hidden="true">{initials(p.name)}</span>
+                )}
+                <div>
+                  <p class="person__name">{p.name}</p>
+                  {p.role && <p class="person__role">{p.role}</p>}
+                  {p.bio && <p class="person__bio">{p.bio}</p>}
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+    </div>
+
+    <aside class="about__aside">
+      <div class="callout">
+        <p class="label">Get involved</p>
+        <h2>Write for The Event Horizon</h2>
+        <p>Writers, editors, designers and photographers welcome. No experience needed.</p>
+        {site.joinUrl && <a class="btn btn--solid" href={site.joinUrl} target="_blank" rel="noopener">Join the staff ↗</a>}
+        {(site.email || site.instagram) && (
+          <p class="callout__contact">
+            {site.email && <a href={`mailto:${site.email}`}>{site.email}</a>}
+            {site.instagram && <a href={instagramUrl(site.instagram)} target="_blank" rel="noopener">Instagram</a>}
+          </p>
+        )}
+      </div>
+    </aside>
+  </div>
+</Base>

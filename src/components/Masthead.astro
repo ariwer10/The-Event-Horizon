@@ -1,0 +1,38 @@
+---
+import BlackHole from './BlackHole.astro';
+import { site, sections, formatDate } from '../lib/site';
+
+interface Props { variant?: 'full' | 'compact'; current?: string; issueDate?: Date }
+const { variant = 'compact', current = '', issueDate } = Astro.props;
+const TitleTag = variant === 'full' ? 'h1' : 'div';
+---
+<header class={`masthead masthead--${variant}`}>
+  <div class="utility">
+    <div class="wrap utility__inner">
+      <a class="utility__home" href="/">Front page</a>
+      <nav aria-label="Site">
+        <a href="/about/" aria-current={current === 'about' ? 'page' : undefined}>About</a>
+        {site.joinUrl && <a class="utility__join" href={site.joinUrl} target="_blank" rel="noopener">Join us ↗</a>}
+      </nav>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="masthead__meta">
+      <span>{site.location}</span>
+      <span class="masthead__tagline">{site.tagline}</span>
+      <span>{site.volume}{issueDate && <span class="masthead__date"> · {formatDate(issueDate, 'short')}</span>}</span>
+    </div>
+    <div class="rule rule--thick"></div>
+    <TitleTag class="masthead__title">
+      <a href="/" aria-label="The Event Horizon — front page">
+        <span>The Event</span><BlackHole class="masthead__mark" /><span>Horizon</span>
+      </a>
+    </TitleTag>
+    <div class="rule rule--double"></div>
+    <nav class="masthead__sections" aria-label="Sections">
+      {sections.map((s) => (
+        <a href={s.href} aria-current={current === s.slug ? 'page' : undefined}>{s.name}</a>
+      ))}
+    </nav>
+  </div>
+</header>

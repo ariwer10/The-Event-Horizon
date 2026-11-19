@@ -1,0 +1,25 @@
+---
+import type { Article } from '../lib/articles';
+import { formatDate, isoDate } from '../lib/site';
+
+interface Props { article: Article; size?: 'lead' | 'standard' | 'compact'; showSection?: boolean; showImage?: boolean }
+const { article: a, size = 'standard', showSection = true, showImage = true } = Astro.props;
+const Heading = size === 'lead' ? 'h2' : 'h3';
+const img = showImage && a.data.image ? a.data.image : '';
+---
+<article class={`card card--${size}${img ? ' card--has-image' : ''}`}>
+  {img && (
+    <a class="card__media" href={a.href} tabindex="-1" aria-hidden="true">
+      <img src={img} alt="" loading={size === 'lead' ? 'eager' : 'lazy'} decoding="async" />
+    </a>
+  )}
+  <div class="card__body">
+    {showSection && <a class="kicker" href={a.sectionHref}>{a.sectionName}</a>}
+    <Heading class="card__title"><a href={a.href}>{a.data.title}</a></Heading>
+    {a.data.dek && size !== 'compact' && <p class="card__dek">{a.data.dek}</p>}
+    <p class="byline">
+      {a.data.author && <span>By {a.data.author}</span>}
+      <time datetime={isoDate(a.when)}>{formatDate(a.when, 'short')}</time>
+    </p>
+  </div>
+</article>

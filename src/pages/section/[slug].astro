@@ -1,0 +1,41 @@
+---
+import Base from '../../layouts/Base.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
+import { getArticles } from '../../lib/articles';
+import { sections, site } from '../../lib/site';
+
+export function getStaticPaths() {
+  return sections.map((s) => ({ params: { slug: s.slug } }));
+}
+
+const { slug } = Astro.params;
+const section = sections.find((s) => s.slug === slug)!;
+const items = (await getArticles()).filter((a) => a.data.section === section.slug);
+const [first, ...others] = items;
+---
+<Base title={section.name} description={section.description || `${section.name} coverage from ${site.title}.`} current={section.slug}>
+  <header class="page-head">
+    <p class="label">Section {section.number}</p>
+    <h1>{section.name}</h1>
+    {section.description && <p class="page-head__dek">{section.description}</p>}
+  </header>
+
+  {first ? (
+    <>
+      <section class="front"><ArticleCard article={first} size="lead" showSection={false} /></section>
+      {others.length > 0 && (
+        <section class="block">
+          <div class="list ruled-rows">
+            {others.map((a) => <ArticleCard article={a} showSection={false} />)}
+          </div>
+        </section>
+      )}
+    </>
+  ) : (
+    <section class="empty-front">
+      <h2>No {section.name} stories yet.</h2>
+      <p>Want to write the first one?</p>
+      {site.joinUrl && <a class="btn btn--solid" href={site.joinUrl} target="_blank" rel="noopener">Join the staff ↗</a>}
+    </section>
+  )}
+</Base>

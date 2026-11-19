@@ -1,0 +1,65 @@
+---
+import Base from '../layouts/Base.astro';
+import ArticleCard from '../components/ArticleCard.astro';
+import { getArticles, pickLead } from '../lib/articles';
+import { site, sections } from '../lib/site';
+
+const all = await getArticles();
+const lead = pickLead(all);
+const rest = all.filter((a) => a !== lead);
+const latest = rest.slice(0, 6);
+const bySection = sections.map((s) => ({
+  ...s,
+  items: all.filter((a) => a.data.section === s.slug).slice(0, 3),
+}));
+---
+<Base variant="full" issueDate={all[0]?.when}>
+  {lead ? (
+    <section class="front" aria-label="Top story">
+      <ArticleCard article={lead} size="lead" />
+    </section>
+  ) : (
+    <section class="empty-front">
+      <p class="label">First issue</p>
+      <h2>The first stories are on their way.</h2>
+      <p>{site.description}</p>
+      {site.joinUrl && <a class="btn btn--solid" href={site.joinUrl} target="_blank" rel="noopener">Join the staff ↗</a>}
+    </section>
+  )}
+
+  {latest.length > 0 && (
+    <section class="block" aria-labelledby="latest-h">
+      <div class="block__head">
+        <h2 id="latest-h" class="label">Latest</h2>
+      </div>
+      <div class="grid grid--3 ruled">
+        {latest.map((a) => <ArticleCard article={a} />)}
+      </div>
+    </section>
+  )}
+
+  <section class="block" aria-labelledby="sections-h">
+    <div class="block__head">
+      <h2 id="sections-h" class="label">The sections</h2>
+    </div>
+    <div class="grid grid--3 ruled sections-grid">
+      {bySection.map((s) => (
+        <div class="section-box">
+          <a class="section-box__head" href={s.href}>
+            <span class="section-box__num">{s.number}</span>
+            <h3>{s.name}</h3>
+          </a>
+          {s.description && <p class="section-box__desc">{s.description}</p>}
+          {s.items.length ? (
+            <ul class="section-box__list">
+              {s.items.map((a) => <li><ArticleCard article={a} size="compact" showSection={false} showImage={false} /></li>)}
+            </ul>
+          ) : (
+            <p class="muted section-box__empty">No stories yet.</p>
+          )}
+          <a class="more" href={s.href}>All {s.name} →</a>
+        </div>
+      ))}
+    </div>
+  </section>
+</Base>

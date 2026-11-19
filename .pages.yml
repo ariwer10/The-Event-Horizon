@@ -1,0 +1,151 @@
+media:
+  input: public/images/uploads
+  output: /images/uploads
+  rename: safe
+  categories: [image]
+
+content:
+  - name: articles
+    label: Articles
+    type: collection
+    path: src/content/articles
+    filename: "{year}-{month}-{day}-{fields.title}.md"
+    fields:
+      - name: title
+        label: Headline
+        type: string
+        required: true
+      - name: dek
+        label: Subheadline (one-sentence summary)
+        type: text
+      - name: section
+        label: Section
+        type: select
+        required: true
+        options:
+          values:
+            - name: commercial
+              label: Commercial
+            - name: governmental
+              label: Governmental
+            - name: international
+              label: International
+            - name: astronomy
+              label: Astronomy
+            - name: defense-intelligence
+              label: Defense & Intelligence
+            - name: space-economy
+              label: Space Economy
+      - name: author
+        label: Author
+        type: string
+      - name: date
+        label: Publish date
+        type: date
+        options:
+          format: yyyy-MM-dd
+      - name: image
+        label: Cover image (optional)
+        type: image
+      - name: imageCaption
+        label: Cover image caption / credit
+        type: string
+      - name: featured
+        label: Make this the top story on the front page
+        type: boolean
+        default: false
+      - name: draft
+        label: Draft (hide from the site)
+        type: boolean
+        default: false
+      - name: body
+        label: Article
+        type: rich-text
+        options:
+          format: markdown
+
+  - name: about
+    label: About page
+    type: file
+    path: src/content/pages/about.md
+    fields:
+      - name: title
+        label: Page title
+        type: string
+      - name: mission
+        label: Mission statement (shown large at the top)
+        type: text
+      - name: staff
+        label: Staff
+        type: object
+        list: true
+        fields:
+          - name: name
+            label: Name
+            type: string
+          - name: role
+            label: Role
+            type: string
+          - name: photo
+            label: Photo (optional)
+            type: image
+          - name: bio
+            label: Short bio
+            type: text
+      - name: body
+        label: Main text
+        type: rich-text
+        options:
+          format: markdown
+
+  - name: settings
+    label: Site settings
+    type: file
+    path: src/data/settings.json
+    fields:
+      - name: siteUrl
+        label: Site address (change this when you get a custom domain)
+        type: string
+      - name: location
+        label: Location (top left of the masthead)
+        type: string
+      - name: tagline
+        label: Tagline (top center of the masthead)
+        type: string
+      - name: volume
+        label: Volume (top right of the masthead)
+        type: string
+      - name: description
+        label: Short description (footer and Google results)
+        type: text
+      - name: joinUrl
+        label: Join / sign-up form link
+        type: string
+      - name: email
+        label: Contact email (optional)
+        type: string
+      - name: instagram
+        label: Instagram handle or link (optional)
+        type: string
+      - name: sectionDescriptions
+        label: Section descriptions
+        type: object
+        fields:
+          - name: commercial
+            label: Commercial
+            type: text
+          - name: governmental
+            label: Governmental
+            type: text
+          - name: international
+            label: International
+            type: text
+          - name: astronomy
+            label: Astronomy
+            type: text
+          - name: defense-intelligence
+            label: Defense & Intelligence
+            type: text
+          - name: space-economy
+            label: Space Economy
+            type: text

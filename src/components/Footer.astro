@@ -1,0 +1,32 @@
+---
+import BlackHole from './BlackHole.astro';
+import { site, sections, instagramUrl } from '../lib/site';
+const year = new Date().getUTCFullYear();
+---
+<footer class="footer">
+  <div class="wrap">
+    <div class="rule rule--double"></div>
+    <div class="footer__grid">
+      <div class="footer__brand">
+        <a href="/" class="footer__logo"><span>The Event</span><BlackHole size="0.9em" /><span>Horizon</span></a>
+        <p>{site.description}</p>
+        {site.joinUrl && <a class="btn" href={site.joinUrl} target="_blank" rel="noopener">Write for us ↗</a>}
+      </div>
+      <nav aria-label="Sections in footer">
+        <h2 class="label">Sections</h2>
+        <ul>{sections.map((s) => <li><a href={s.href}>{s.name}</a></li>)}</ul>
+      </nav>
+      <nav aria-label="More">
+        <h2 class="label">The paper</h2>
+        <ul>
+          <li><a href="/">Front page</a></li>
+          <li><a href="/about/">About us</a></li>
+          {site.email && <li><a href={`mailto:${site.email}`}>Email</a></li>}
+          {site.instagram && <li><a href={instagramUrl(site.instagram)} target="_blank" rel="noopener">Instagram</a></li>}
+          <li><a href="/rss.xml">RSS feed</a></li>
+        </ul>
+      </nav>
+    </div>
+    <p class="footer__fine">© {year} {site.title} · {site.location} · A student publication.</p>
+  </div>
+</footer>
